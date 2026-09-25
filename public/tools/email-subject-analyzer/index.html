@@ -1,1 +1,45 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Free email subject line analyzer for length, wording and basic deliverability checks."><title>Email Subject Analyzer — Tools Hub</title><link rel="stylesheet" href="/assets/style.css"></head><body><header class="site-header"><div class="container nav"><a class="brand" href="/">Tools Hub</a></div></header><main class="container"><section class="hero"><p class="eyebrow">EMAIL</p><h1>Email Subject Analyzer</h1><p>Review subject-line length and common wording patterns. This is a heuristic, not a guaranteed spam or inbox-placement score.</p></section><section class="card"><label for="subject">Subject line</label><input id="subject" oninput="analyze()" style="display:block;width:100%;padding:12px;margin:8px 0 14px;border:1px solid #d1d5db;border-radius:8px"><div id="output">Enter a subject line.</div></section></main><script>function analyze(){const s=document.getElementById('subject').value.trim();const n=s.length;const long=n>60?'Long':'Within a common range';const ex=(s.match(/!/g)||[]).length;document.getElementById('output').innerHTML=s?'<p><strong>Characters:</strong> '+n+'</p><p><strong>Length:</strong> '+long+'</p><p><strong>Exclamation marks:</strong> '+ex+'</p>':'Enter a subject line.'}</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Free email subject line analyzer for length, punctuation, capitalization, wording patterns, and readability.">
+<link rel="canonical" href="https://tools-hub.partisan-dev.workers.dev/tools/email-subject-analyzer/">
+<meta property="og:title" content="Email Subject Analyzer — Tools Hub"><meta property="og:description" content="Analyze subject-line length, wording, punctuation, capitalization, and readability."><meta property="og:type" content="website">
+<title>Email Subject Analyzer — Tools Hub</title><link rel="stylesheet" href="/assets/style.css"><script src="/assets/site.js" defer></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Email Subject Analyzer","applicationCategory":"BusinessApplication","operatingSystem":"Any","url":"https://tools-hub.partisan-dev.workers.dev/tools/email-subject-analyzer/"}</script>
+</head>
+<body>
+<header class="site-header"><div class="container nav"><a class="brand" href="/">Tools Hub</a><nav aria-label="Primary"><a href="/tools/amazon-fba-profit-calculator/">FBA Calculator</a><a href="/tools/domain-name-generator/">Domain Generator</a><a href="/tools/email-subject-analyzer/">Email Analyzer</a></nav></div></header>
+<main class="container tool-layout">
+<section class="hero"><p class="eyebrow">EMAIL MARKETING</p><h1>Email Subject Analyzer</h1><p>Review common subject-line signals such as length, punctuation, capitalization, promotional wording, and readability. This is a heuristic checklist—not a guaranteed spam or inbox-placement score.</p></section>
+<section class="card">
+<div class="field"><label for="subject">Subject line</label><input id="subject" maxlength="200" placeholder="e.g. Your weekly analytics report is ready" autocomplete="off"></div>
+<div class="metric-grid" id="metrics" aria-live="polite"><div class="metric"><span class="muted">Characters</span><strong>0</strong></div><div class="metric"><span class="muted">Words</span><strong>0</strong></div><div class="metric"><span class="muted">Exclamation marks</span><strong>0</strong></div><div class="metric"><span class="muted">Uppercase ratio</span><strong>0%</strong></div></div>
+<div class="results"><h2>Checks</h2><div id="checks" class="notice">Enter a subject line to see recommendations.</div></div>
+</section>
+<section class="content-section"><h2>What the analyzer checks</h2><p>It looks for very long subjects, excessive punctuation, all-caps wording, repeated symbols, common promotional phrases, and other readability issues. These signals can be useful during editing, but actual deliverability depends on sender reputation, authentication, message content, recipient engagement, provider policies, and many other factors.</p></section>
+</main>
+<footer class="site-footer"><div class="container"><a href="/">Home</a> · <a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="/affiliate-disclosure.html">Affiliate Disclosure</a></div></footer>
+<script>
+const subjectEl=document.getElementById('subject'),metricsEl=document.getElementById('metrics'),checksEl=document.getElementById('checks');
+const promo=/\b(free|sale|deal|discount|buy now|limited time|act now|winner|cash|guaranteed|urgent)\b/gi;
+function analyze(){
+ const s=subjectEl.value.trim(), chars=s.length, words=s?s.split(/\s+/).length:0, ex=(s.match(/!/g)||[]).length, q=(s.match(/\?/g)||[]).length, caps=(s.match(/[A-Z]/g)||[]).length, letters=(s.match(/[A-Za-z]/g)||[]).length, ratio=letters?Math.round(caps/letters*100):0;
+ metricsEl.innerHTML='<div class="metric"><span class="muted">Characters</span><strong>'+chars+'</strong></div><div class="metric"><span class="muted">Words</span><strong>'+words+'</strong></div><div class="metric"><span class="muted">Exclamation marks</span><strong>'+ex+'</strong></div><div class="metric"><span class="muted">Uppercase ratio</span><strong>'+ratio+'%</strong></div>';
+ if(!s){checksEl.textContent='Enter a subject line to see recommendations.';return}
+ const issues=[];
+ if(chars>60)issues.push('Consider shortening the subject so the key message is visible on more screens.');
+ if(chars<20)issues.push('This is quite short; make sure it gives enough context to the recipient.');
+ if(ex>=2)issues.push('Multiple exclamation marks can make a subject look overly promotional. Consider using one or none.');
+ if(q>=2)issues.push('Several question marks may reduce clarity. Keep punctuation purposeful.');
+ if(/([!?])\1+/.test(s))issues.push('Repeated punctuation detected. Use normal punctuation for a cleaner presentation.');
+ if(ratio>=60&&letters>=6)issues.push('A high proportion of uppercase letters can feel like shouting. Consider normal sentence-style capitalization.');
+ const matches=s.match(promo)||[];
+ if(matches.length)issues.push('Promotional wording detected: '+[...new Set(matches.map(x=>x.toLowerCase()))].join(', ')+'. Review whether each term is necessary.');
+ if(/\b(you|your)\b/i.test(s)===false)issues.push('Consider whether the subject can make the recipient benefit or outcome clearer.');
+ if(!issues.length)issues.push('No obvious issues found by this checklist. Test the subject with your audience and keep the message aligned with the email content.');
+ checksEl.innerHTML='<ul>'+issues.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+}
+subjectEl.addEventListener('input',analyze);analyze();
+</script>
+</body></html>
