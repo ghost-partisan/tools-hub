@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-
-Sitemap: /sitemap.xml
+Sitemap: https://tools-hub.partisan-dev.workers.dev/sitemap.xml
