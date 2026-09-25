@@ -1,1 +1,106 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Free Amazon FBA profit calculator. Estimate fees, profit, margin, ROI and break-even price."><title>Amazon FBA Profit Calculator — Tools Hub</title><link rel="stylesheet" href="/assets/style.css"></head><body><header class="site-header"><div class="container nav"><a class="brand" href="/">Tools Hub</a></div></header><main class="container"><section class="hero"><p class="eyebrow">AMAZON FBA</p><h1>Amazon FBA Profit Calculator</h1><p>Estimate your unit economics using your own selling price, costs, fees, advertising, and returns assumptions.</p></section><section class="card"><p><strong>Calculator coming next.</strong> The production calculator will include referral fee, fulfillment, inbound shipping, storage/other costs, advertising, returns reserve, profit, margin, ROI, and break-even calculations.</p></section></main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Free Amazon FBA profit calculator. Estimate referral fees, fulfillment, advertising, profit, margin, ROI and break-even selling price.">
+<title>Amazon FBA Profit Calculator — Tools Hub</title>
+<link rel="stylesheet" href="/assets/style.css">
+<style>
+.calculator{display:grid;grid-template-columns:1.15fr .85fr;gap:24px;margin:10px 0 70px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.field label{display:block;font-weight:700;font-size:.92rem;margin-bottom:6px}
+.field input{width:100%;padding:12px 13px;border:1px solid #d1d5db;border-radius:10px;font:inherit;background:#fff}
+.field small{display:block;color:#6b7280;margin-top:5px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.button.secondary{background:#fff;color:#111827;border:1px solid #d1d5db}
+.results{position:sticky;top:18px}
+.result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.metric{border:1px solid #e5e7eb;border-radius:12px;padding:15px;background:#fafafa}
+.metric span{display:block;color:#6b7280;font-size:.85rem}.metric strong{display:block;font-size:1.35rem;margin-top:4px}
+.metric.primary{grid-column:1/-1}
+.metric.primary strong{font-size:2rem}
+.note{font-size:.9rem;color:#6b7280;margin-top:18px}
+.breakdown{margin-top:20px;border-top:1px solid #e5e7eb;padding-top:16px}
+.breakdown-row{display:flex;justify-content:space-between;gap:15px;padding:7px 0}
+.positive{font-weight:800}.negative{font-weight:800}
+@media(max-width:800px){.calculator{grid-template-columns:1fr}.results{position:static}.form-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="container nav"><a class="brand" href="/">Tools Hub</a><nav><a href="/tools/amazon-fba-profit-calculator/">FBA Calculator</a><a href="/tools/domain-name-generator/">Domain Generator</a><a href="/tools/email-subject-analyzer/">Email Analyzer</a></nav></div></header>
+<main class="container">
+<section class="hero">
+<p class="eyebrow">AMAZON FBA</p>
+<h1>Amazon FBA Profit Calculator</h1>
+<p>Estimate your per-unit profit, margin, ROI, and break-even selling price using your own costs and fee assumptions.</p>
+</section>
+<section class="calculator">
+<div class="card">
+<h2>Your assumptions</h2>
+<div class="form-grid">
+<div class="field"><label for="price">Selling price (€)</label><input id="price" type="number" min="0" step="0.01" value="29.99"></div>
+<div class="field"><label for="productCost">Product cost (€)</label><input id="productCost" type="number" min="0" step="0.01" value="8"></div>
+<div class="field"><label for="referral">Referral fee (%)</label><input id="referral" type="number" min="0" step="0.1" value="15"><small>Use the percentage that applies to your category.</small></div>
+<div class="field"><label for="fulfillment">FBA fulfillment fee (€)</label><input id="fulfillment" type="number" min="0" step="0.01" value="4.50"></div>
+<div class="field"><label for="inbound">Inbound shipping/unit (€)</label><input id="inbound" type="number" min="0" step="0.01" value="0.80"></div>
+<div class="field"><label for="storage">Storage & other/unit (€)</label><input id="storage" type="number" min="0" step="0.01" value="0.50"></div>
+<div class="field"><label for="ads">Advertising (% of sales)</label><input id="ads" type="number" min="0" step="0.1" value="10"></div>
+<div class="field"><label for="returns">Returns reserve (% of sales)</label><input id="returns" type="number" min="0" step="0.1" value="2"></div>
+</div>
+<div class="actions"><button class="button" id="calculate" type="button">Calculate profit</button><button class="button secondary" id="reset" type="button">Reset</button></div>
+<p class="note">This is an estimate based on your inputs. Amazon fees vary by marketplace, category, product size, fulfillment details, storage period, and other factors. It is not an official Amazon fee quote.</p>
+</div>
+<div class="card results">
+<h2>Results</h2>
+<div class="result-grid">
+<div class="metric primary"><span>Net profit / unit</span><strong id="profit">€0.00</strong></div>
+<div class="metric"><span>Profit margin</span><strong id="margin">0.0%</strong></div>
+<div class="metric"><span>ROI on product cost</span><strong id="roi">0.0%</strong></div>
+<div class="metric"><span>Total cost / unit</span><strong id="totalCost">€0.00</strong></div>
+<div class="metric"><span>Break-even price</span><strong id="breakEven">€0.00</strong></div>
+<div class="metric"><span>Referral fee</span><strong id="referralFee">€0.00</strong></div>
+</div>
+<div class="breakdown">
+<h3>Cost breakdown</h3>
+<div class="breakdown-row"><span>Product cost</span><strong id="bProduct">€0.00</strong></div>
+<div class="breakdown-row"><span>Referral fee</span><strong id="bReferral">€0.00</strong></div>
+<div class="breakdown-row"><span>FBA fulfillment</span><strong id="bFulfillment">€0.00</strong></div>
+<div class="breakdown-row"><span>Inbound shipping</span><strong id="bInbound">€0.00</strong></div>
+<div class="breakdown-row"><span>Storage & other</span><strong id="bStorage">€0.00</strong></div>
+<div class="breakdown-row"><span>Advertising</span><strong id="bAds">€0.00</strong></div>
+<div class="breakdown-row"><span>Returns reserve</span><strong id="bReturns">€0.00</strong></div>
+</div>
+</div>
+</section>
+<section class="card" style="margin-bottom:70px">
+<h2>How the calculation works</h2>
+<p>Revenue is your selling price. Percentage-based costs include the referral fee, advertising, and returns reserve. Fixed per-unit costs include product cost, FBA fulfillment, inbound shipping, and storage/other costs. Net profit is revenue minus all of those costs.</p>
+<p>The break-even selling price estimates the price at which profit reaches zero while keeping your percentage-based costs unchanged.</p>
+</section>
+</main>
+<footer class="site-footer"><div class="container"><a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="/affiliate-disclosure.html">Affiliate Disclosure</a></div></footer>
+<script>
+(function(){
+const ids=["price","productCost","referral","fulfillment","inbound","storage","ads","returns"];
+const el=id=>document.getElementById(id);
+const money=n=>"€"+n.toFixed(2);
+function value(id){const n=parseFloat(el(id).value);return Number.isFinite(n)&&n>=0?n:0}
+function calculate(){
+ const price=value("price"), product=value("productCost"), referralRate=value("referral")/100, fulfillment=value("fulfillment"), inbound=value("inbound"), storage=value("storage"), adsRate=value("ads")/100, returnsRate=value("returns")/100;
+ const referral=price*referralRate, ads=price*adsRate, returns=price*returnsRate;
+ const fixed=product+fulfillment+inbound+storage, total=fixed+referral+ads+returns, profit=price-total;
+ const margin=price>0?profit/price*100:0, roi=product>0?profit/product*100:0;
+ const variableRate=referralRate+adsRate+returnsRate;
+ const breakEven=variableRate<1?fixed/(1-variableRate):0;
+ el("profit").textContent=money(profit); el("margin").textContent=margin.toFixed(1)+"%"; el("roi").textContent=roi.toFixed(1)+"%"; el("totalCost").textContent=money(total); el("breakEven").textContent=breakEven?money(breakEven):"N/A"; el("referralFee").textContent=money(referral);
+ el("bProduct").textContent=money(product); el("bReferral").textContent=money(referral); el("bFulfillment").textContent=money(fulfillment); el("bInbound").textContent=money(inbound); el("bStorage").textContent=money(storage); el("bAds").textContent=money(ads); el("bReturns").textContent=money(returns);
+}
+el("calculate").addEventListener("click",calculate);
+el("reset").addEventListener("click",()=>{el("price").value=29.99;el("productCost").value=8;el("referral").value=15;el("fulfillment").value=4.5;el("inbound").value=.8;el("storage").value=.5;el("ads").value=10;el("returns").value=2;calculate()});
+ids.forEach(id=>el(id).addEventListener("input",calculate));
+calculate();
+})();
+</script>
+</body>
+</html>
