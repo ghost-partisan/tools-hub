@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="description" content="Free domain availability checker. Check whether a domain appears registered using RDAP and compare common domain extensions.">
+<title>Free Domain Availability Checker — Tools Hub</title>
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Free Domain Availability Checker — Tools Hub">
+<meta property="og:title" content="Free Domain Availability Checker — Tools Hub">
+<meta property="og:description" content="Check whether a domain appears registered using current RDAP registration data.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://tools-hub.partisan-dev.workers.dev/tools/domain-availability-checker/">
+<link rel="stylesheet" href="/assets/style.css">
+<script src="/assets/site.js" defer></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Domain Availability Checker","description":"Check whether a domain appears registered using RDAP registration data.","applicationCategory":"BusinessApplication","operatingSystem":"Any","url":"https://tools-hub.partisan-dev.workers.dev/tools/domain-availability-checker/"}</script>
+</head>
+<body>
+<header class="site-header"><div class="container nav"><a class="brand" href="/">Tools Hub</a><nav aria-label="Primary"><a href="/tools/amazon-fba-profit-calculator/">FBA Calculator</a><a href="/tools/domain-name-generator/">Domain Generator</a><a href="/tools/domain-availability-checker/">Domain Checker</a><a href="/tools/email-subject-analyzer/">Email Analyzer</a></nav></div></header>
+<main class="container tool-layout">
+<section class="hero"><p class="eyebrow">DOMAINS</p><h1>Domain Availability Checker</h1><p>Check whether a domain appears registered using RDAP registration data. Enter a full domain such as <strong>example.com</strong>.</p></section>
+<section class="card">
+<div class="field"><label for="domain">Domain name</label><input id="domain" maxlength="253" placeholder="e.g. example.com" autocomplete="off" inputmode="url"></div>
+<div class="actions"><button class="button" id="check" type="button">Check domain</button><button class="button secondary" id="clear" type="button">Clear</button></div>
+<div id="status" class="notice" aria-live="polite">Enter a domain to check.</div>
+<div id="result" class="results" hidden></div>
+</section>
+<section class="content-section">
+<h2>How the domain checker works</h2>
+<p>This tool queries RDAP, the standardized registration-data system that replaced WHOIS as the definitive source for generic top-level-domain registration information. A domain that returns registration data appears registered; a successful “not found” response can indicate that no registration record was found.</p>
+<p>Registration status can change quickly, and an RDAP result is not a purchase quote. Always confirm availability and price with a registrar before registering a domain.</p>
+<p><a href="/tools/domain-name-generator/">Generate domain name ideas →</a> · <a href="/blog/how-to-choose-a-domain-name.html">Read the domain name guide →</a></p>
+</section>
+<section class="card" style="margin-bottom:70px">
+<h2>Why check more than one domain extension?</h2>
+<p>Your preferred .com may already be registered. Checking alternative extensions can help you compare naming options, but the right extension depends on your audience, brand, project, and budget.</p>
+</section>
+</main>
+<footer class="site-footer"><div class="container"><a href="/">Home</a> · <a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="/affiliate-disclosure.html">Affiliate Disclosure</a></div></footer>
+<script>
+const domainEl=document.getElementById('domain'),statusEl=document.getElementById('status'),resultEl=document.getElementById('result');
+function normalize(value){return value.trim().toLowerCase().replace(/^https?:\/\//,'').replace(/^www\./,'').split('/')[0].replace(/\.$/,'');}
+function validDomain(d){return d.length>=3&&d.length<=253&&!d.includes(' ')&&/^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i.test(d);}
+async function check(){
+ const domain=normalize(domainEl.value);
+ resultEl.hidden=true; resultEl.innerHTML='';
+ if(!validDomain(domain)){statusEl.textContent='Enter a valid domain such as example.com.';return;}
+ statusEl.textContent='Checking RDAP registration data…';
+ try{
+   const response=await fetch('https://rdap.org/domain/'+encodeURIComponent(domain),{headers:{Accept:'application/rdap+json, application/json'}});
+   if(response.status===404){
+     statusEl.textContent='No RDAP registration record was found for this domain.';
+     resultEl.hidden=false;
+     resultEl.innerHTML='<div class="notice"><strong>Likely not registered</strong><p>No registration record was returned. Confirm availability with a registrar before registering.</p></div>';
+     return;
+   }
+   if(!response.ok) throw new Error('RDAP request failed');
+   const data=await response.json();
+   const events=(data.events||[]).filter(e=>e.eventAction==='registration'||e.eventAction==='expiration');
+   const registered=Array.isArray(data.status)?data.status.join(', '):'Registration data found';
+   statusEl.textContent='RDAP returned registration data for this domain.';
+   resultEl.hidden=false;
+   resultEl.innerHTML='<div class="notice"><strong>Appears registered</strong><p>RDAP returned a domain registration record. Status: '+escapeHtml(registered)+'.</p>'+events.map(e=>'<p><strong>'+escapeHtml(e.eventAction)+':</strong> '+escapeHtml(e.eventDate||'')+'</p>').join('')+'<p>Confirm current registration status and pricing with a registrar.</p></div>';
+ }catch(err){
+   statusEl.textContent='The RDAP service could not complete the check.';
+   resultEl.hidden=false;
+   resultEl.innerHTML='<div class="notice"><strong>Check unavailable</strong><p>Try again shortly or confirm the domain directly with a registrar.</p></div>';
+ }
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+document.getElementById('check').addEventListener('click',check);
+document.getElementById('clear').addEventListener('click',()=>{domainEl.value='';statusEl.textContent='Enter a domain to check.';resultEl.hidden=true;resultEl.innerHTML='';domainEl.focus();});
+domainEl.addEventListener('keydown',e=>{if(e.key==='Enter')check();});
+</script>
+</body>
+</html>
