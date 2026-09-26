@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "toolivo-b8a36"
+  },
+  "targets": {
+    "toolivo-b8a36": {
+      "hosting": {
+        "current": [
+          "toolivo-b8a36"
+        ],
+        "toolivo": [
+          "toolivo"
+        ]
+      }
+    }
   }
 }
