@@ -16,3 +16,64 @@ document.addEventListener("DOMContentLoaded",function(){
  s.innerHTML='<p class="eyebrow">'+item.eyebrow+'</p><h2>'+item.title+'</h2><p>'+item.text+'</p><p><a class="button" href="'+item.url+'" target="_blank" rel="noopener noreferrer">'+item.cta+'</a> <a class="button secondary" href="'+window.TOOLIVO_SHOP.shop+'" target="_blank" rel="noopener noreferrer">View all products</a></p>';
  const footer=document.querySelector("footer"); if(footer)main.insertBefore(s,footer);else main.appendChild(s);
 });
+
+(function(){
+  const TOOL_NAMES={
+    "/tools/amazon-fba-profit-calculator":"amazon_fba_profit_calculator",
+    "/tools/domain-name-generator":"domain_name_generator",
+    "/tools/domain-availability-checker":"domain_availability_checker",
+    "/tools/email-subject-analyzer":"email_subject_analyzer"
+  };
+  const toolName=TOOL_NAMES[window.location.pathname.replace(/\/$/,"")];
+
+  function track(eventName,params){
+    if(typeof window.gtag==="function") window.gtag("event",eventName,params||{});
+  }
+
+  document.addEventListener("click",function(e){
+    const link=e.target.closest("a");
+    if(link){
+      const href=link.href||"";
+      if(link.closest(".toolivo-pro-cta")){
+        track("pro_cta_click",{
+          tool:toolName||"homepage",
+          cta_text:(link.textContent||"").trim().slice(0,100),
+          destination:href
+        });
+      } else if(/ko-fi\.com\/toolivo/i.test(href)){
+        track("shop_click",{
+          tool:toolName||"homepage",
+          destination:href
+        });
+      } else if(/siteground\.com/i.test(href)){
+        track("affiliate_click",{
+          partner:"siteground",
+          tool:toolName||"homepage",
+          destination:href
+        });
+      }
+    }
+
+    const button=e.target.closest("button");
+    if(button && toolName){
+      const actionMap={
+        calculate:"calculate_profit",
+        generate:"generate_domain_ideas",
+        check:"check_domain"
+      };
+      const action=actionMap[button.id];
+      if(action) track("tool_use",{tool:toolName,action:action});
+    }
+  });
+
+  if(toolName==="email_subject_analyzer"){
+    const input=document.getElementById("subject");
+    let tracked=false;
+    if(input) input.addEventListener("input",function(){
+      if(!tracked && input.value.trim()){
+        tracked=true;
+        track("tool_use",{tool:toolName,action:"analyze_subject"});
+      }
+    });
+  }
+})();
